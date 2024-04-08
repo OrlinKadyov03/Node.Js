@@ -1,22 +1,31 @@
 const asyncHandler = require("express-async-handler")
+const Contact = require("../models/contactModel")
 //@ desc Get all contacts
 //@ route GET /api/contacts
 //@ access public 
-const getContact = asyncHandler((req,res)=>{
-    res.status(200).json({msg:'Get all contacts'})
+const getContact = asyncHandler(async(req,res)=>{
+    const contact = await Contact.find()
+    res.status(200).json(contact)
 })
 //@ desc Create contact
 //@ route POST /api/contacts
 //@ access public 
-const createContact = asyncHandler( (req,res)=>{
-    const {name,email,phone} = req.body.name
+const createContact = asyncHandler(async (req,res)=>{
+    const {name,email,phone} = req.body
     console.log("The request body is :",req.body)
     if(!name || !email || !phone)
     {
        res.status(400)
        throw new Error("Not filled correctly")
     }
-        res.status(201).json({msg: 'Contact created'})
+
+    const contact = await Contact.create({
+        name,
+        email,
+        phone
+    })
+
+    res.status(201).json(contact)
  
 
 })
@@ -24,14 +33,21 @@ const createContact = asyncHandler( (req,res)=>{
 //@ desc Get contact by id
 //@ route GET /api/contacts/:id
 //@ access public 
-const getContactById = asyncHandler((req,res)=>{
-    res.status(200).json({msg: `Contact get by id ${req.params.id}`})
+const getContactById = asyncHandler(async(req,res)=>{
+ 
+
+    const contact = await Contact.findById(req.params.id)
+    if(!contact) {
+        res.status(404)
+        throw new Error("Content not found")
+    }
+    res.status(200).json(contact)
 })
 
 //@ desc Update contact by id
 //@ route PUT /api/contacts/:id
 //@ access public 
-const updateContact = asyncHandler((req,res)=>{
+const updateContact = asyncHandler(async(req,res)=>{
     res.status(200).json({msg: `Update contact with id ${req.params.id}`})
 })
 
