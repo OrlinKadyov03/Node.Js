@@ -48,14 +48,33 @@ const getContactById = asyncHandler(async(req,res)=>{
 //@ route PUT /api/contacts/:id
 //@ access public 
 const updateContact = asyncHandler(async(req,res)=>{
-    res.status(200).json({msg: `Update contact with id ${req.params.id}`})
+    
+    const contact = await Contact.findById(req.params.id)
+    if(!contact) {
+        res.status(404)
+        throw new Error("Content not found")
+    }
+
+    const updatedContact = await Contact.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    )
+
+    res.status(200).json(updatedContact)
 })
 
 //@ desc Delete contact by id
 //@ route DELETE /api/contacts/:id
 //@ access public 
-const deleteContact = asyncHandler((req,res)=>{
-    res.status(200).json({msg: `Delete contact with id ${req.params.id}`})
+const deleteContact = asyncHandler(async(req,res)=>{
+    const contact = await Contact.findById(req.params.id)
+    if(!contact) {
+        res.status(404)
+        throw new Error("Content not found")
+    }
+    await Contact.findByIdAndDelete(req.params.id)
+    res.status(200).json(contact)
 })
 
 
