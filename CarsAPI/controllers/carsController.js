@@ -30,9 +30,22 @@ const createCar = asyncHandler(async(req,res)=>{
 //@ desc Update car
 //@ route PUT /api/cars/:id
 //@ access public 
-const updateCar = (req,res)=>{
-    res.status(200).json({msg: `Car updated ${req.params.id}`})
-}
+const updateCar = asyncHandler(async(req,res)=>{
+    const car = await Car.findById(req.params.id)
+    if(!car){
+        res.status(404)
+        throw new Error("Car not found")
+    }
+
+    const updatedCar = await Car.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {new: true}
+    )
+
+    res.status(200).json(updatedCar)
+
+})
 //@ desc Delete car
 //@ route DELETE /api/cars/:id
 //@ access public 
