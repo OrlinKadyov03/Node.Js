@@ -49,16 +49,29 @@ const updateCar = asyncHandler(async(req,res)=>{
 //@ desc Delete car
 //@ route DELETE /api/cars/:id
 //@ access public 
-const deleteCar = (req,res)=>{
-    res.status(200).json({msg: `Car deleted ${req.params.id}`})
-}
+const deleteCar = asyncHandler(async(req,res)=>{
+    const card = await Car.findById(req.params.id)
+    if(!card) {
+      res.status(404)
+      throw new Error("Car does not exist")    
+    }
+    else{
+     await Car.findByIdAndDelete(req.params.id)
+    res.status(200).json(card)
+    }
+})
 
 //@ desc Get car by id
 //@ route GET /api/cars/:id
 //@ access public 
-const getCarById = (req,res)=>{
-    res.status(200).json({msg: `Get car by id ${req.params.id}`})
-}
+const getCarById = asyncHandler(async(req,res)=>{
+    const car = await Car.findById(req.params.id)
+    if(!car){
+        res.status(404)
+        throw new Error("Cannot get the car by Id")
+    }
+        res.status(200).json(car)
+})
 
 
 
